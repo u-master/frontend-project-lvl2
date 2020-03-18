@@ -2,7 +2,7 @@ install:
 	npm install
 
 start:
-	node bin/index.js
+	node bin/gendiff.js
 
 dry-run:
 	npm publish --dry-run
