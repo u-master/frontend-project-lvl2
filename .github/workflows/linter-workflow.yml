@@ -1,0 +1,22 @@
+name: linter
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install npm packages
+        run: |
+          make install
+      - name: Start inner project linter
+        run: |
+          make lint
+      #- name: Test coverage for CC
+      #  uses: paambaati/codeclimate-action@v2.5.2
+      #  env:
+      #    CC_TEST_REPORTER_ID: b35db7075062d69d8e1bd7eb65f6bed0948ec280115ba0a75d616590f378bac7
+      #  with:
+      #    coverageCommand: make lint
+      #    debug: true

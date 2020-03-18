@@ -1,0 +1,32 @@
+{
+  "name": "gendiff",
+  "version": "1.0.0",
+  "description": "Compares two configuration files and shows a difference",
+  "main": "bin/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/u-master/frontend-project-lvl2.git"
+  },
+  "keywords": [
+    "hexlet",
+    "gendiff"
+  ],
+  "author": "Yuri Zavyalov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/u-master/frontend-project-lvl2/issues"
+  },
+  "homepage": "https://github.com/u-master/frontend-project-lvl2#readme",
+  "devDependencies": {
+    "@babel/preset-env": "^7.8.7",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "jest": "^25.1.0"
+  }
+}
