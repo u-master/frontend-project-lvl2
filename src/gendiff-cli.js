@@ -1,5 +1,6 @@
 
 import program from 'commander';
+import genDiff from './gendiff.js';
 
 export default () => {
   program.version('1.0.1')
@@ -7,7 +8,7 @@ export default () => {
 
   program.arguments('<firstConfig> <secondConfig>')
     .action(
-      (firstConfig, secondConfig) => console.log(`First: ${firstConfig}, Second: ${secondConfig}`),
+      (firstConfig, secondConfig) => console.log(genDiff(firstConfig, secondConfig)),
     );
 
   program.option('-f, --format [type]', 'output format');
