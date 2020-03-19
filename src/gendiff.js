@@ -1,24 +1,36 @@
 
-import fs from 'fs';
+import _ from 'lodash';
 
-const readJSONfromFile = (pathFile) => {
-  try {
-    fs.accessSync(pathFile, fs.constants.R_OK);
-    return JSON.parse(fs.readFileSync(pathFile));
-  } catch (err) {
-    console.error(`File "${pathFile}" no access!`);
-  }
-  return {};
+const genDiff = (obj1, obj2) => {
+  const getKeyState = (e) => {
+    if (!_.has(obj1, e)) return 'added';
+    if (!_.has(obj2, e)) return 'removed';
+    if (obj1[e] !== obj2[e]) return 'changed';
+    return 'unchanged';
+  };
+
+  const buildDiffString = (operation, key, value) => `  ${operation} ${key}: ${value}`;
+
+  const diffs = _
+    .union(Object.keys(obj1), Object.keys(obj2))
+    .reduce(
+      (acc, e) => {
+        switch (getKeyState(e)) {
+          case 'added':
+            return [...acc, buildDiffString('+', e, obj2[e])];
+          case 'removed':
+            return [...acc, buildDiffString('-', e, obj1[e])];
+          case 'changed':
+            return [...acc, buildDiffString('+', e, obj2[e]), buildDiffString('-', e, obj1[e])];
+          case 'unchanged':
+            return [...acc, buildDiffString(' ', e, obj1[e])];
+          default:
+            return acc;
+        }
+      },
+      [],
+    );
+  return ['{', ...diffs, '}'].join('\n');
 };
-
-const genDiff = (pathToFile1, pathToFile2) => {
-  const obj1 = readJSONfromFile(pathToFile1);
-  const obj2 = readJSONfromFile(pathToFile2);
-
-  const result = JSON.stringify({ obj1, obj2 }, null, 2);
-  console.log(result);
-  return result;
-};
-
 
 export default genDiff;

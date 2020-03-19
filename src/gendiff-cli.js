@@ -1,6 +1,6 @@
 
 import program from 'commander';
-import genDiff from './gendiff.js';
+import genDiff from './gendiff-fs.js';
 
 export default () => {
   program.version('1.0.1')
