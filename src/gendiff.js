@@ -1,6 +1,8 @@
 
 import _ from 'lodash';
 
+const buildDiffString = (operation, key, value) => `  ${operation} ${key}: ${value}`;
+
 const genDiff = (obj1, obj2) => {
   const getKeyState = (e) => {
     if (!_.has(obj1, e)) return 'added';
@@ -9,10 +11,7 @@ const genDiff = (obj1, obj2) => {
     return 'unchanged';
   };
 
-  const buildDiffString = (operation, key, value) => `  ${operation} ${key}: ${value}`;
-
-  const diffs = _
-    .union(Object.keys(obj1), Object.keys(obj2))
+  const diffs = _.union(Object.keys(obj1), Object.keys(obj2))
     .reduce(
       (acc, e) => {
         switch (getKeyState(e)) {
@@ -27,8 +26,7 @@ const genDiff = (obj1, obj2) => {
           default:
             return acc;
         }
-      },
-      [],
+      }, [],
     );
   return ['{', ...diffs, '}'].join('\n');
 };
