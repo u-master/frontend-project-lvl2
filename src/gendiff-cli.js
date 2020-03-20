@@ -14,6 +14,4 @@ export default () => {
   program.option('-f, --format [type]', 'output format');
 
   program.parse(process.argv);
-
-  console.log(`Format: ${program.format}`);
 };
