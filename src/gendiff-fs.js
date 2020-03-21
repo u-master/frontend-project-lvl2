@@ -9,13 +9,16 @@ const readJSONfromFile = (pathFile) => {
   } catch (err) {
     console.error(`File "${pathFile}" no access!`);
   }
-  return {};
+  return null;
 };
 
 
 const genDiffFromFiles = (pathToFile1, pathToFile2) => {
   const [obj1, obj2] = [readJSONfromFile(pathToFile1), readJSONfromFile(pathToFile2)];
-  return genDiff(obj1, obj2);
+  if (obj1 && obj2) {
+    return genDiff(obj1, obj2);
+  }
+  return '{\n}';
 };
 
 export default genDiffFromFiles;
