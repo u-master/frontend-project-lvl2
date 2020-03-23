@@ -1,11 +1,18 @@
 
 import fs from 'fs';
+import path from 'path';
+import parser from './parsers.js';
 import genDiff from './gendiff.js';
 
-const readJSONfromFile = (pathFile) => {
+const readFile = (pathFile) => {
+  const format = path.extname(pathFile).replace('.', '').toLowerCase();
+  if (!parser(format)) {
+    console.log(`Unknown format of ${pathFile}`);
+    return null;
+  }
   try {
     fs.accessSync(pathFile, fs.constants.R_OK);
-    return JSON.parse(fs.readFileSync(pathFile));
+    return parser(format)(fs.readFileSync(pathFile));
   } catch (err) {
     console.error(`File "${pathFile}" no access!`);
   }
@@ -14,7 +21,7 @@ const readJSONfromFile = (pathFile) => {
 
 
 const genDiffFromFiles = (pathToFile1, pathToFile2) => {
-  const [obj1, obj2] = [readJSONfromFile(pathToFile1), readJSONfromFile(pathToFile2)];
+  const [obj1, obj2] = [readFile(pathToFile1), readFile(pathToFile2)];
   if (obj1 && obj2) {
     return genDiff(obj1, obj2);
   }

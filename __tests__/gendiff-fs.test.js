@@ -48,6 +48,19 @@ test('Wrong paths', () => {
   expect(genDiff(pathAbsent, pathToSecondFile)).toEqual(emptyDiff);
 });
 
+test('YAML files', () => {
+  const pathToFirstFile = '__fixtures__/before.YML';
+  const pathToSecondFile = './__fixtures__/after/after.yml';
+
+  expect(genDiff(pathToFirstFile, pathToSecondFile)).toEqual(diff);
+});
+
+test('Unknown files', () => {
+  const pathToFirstFile = '__fixtures__/before.txt';
+  const pathToSecondFile = './__fixtures__/after/after.txt';
+
+  expect(genDiff(pathToFirstFile, pathToSecondFile)).toEqual(emptyDiff);
+});
 
 /* const firstJSON = {
   host: 'hexlet.io',
