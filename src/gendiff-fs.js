@@ -12,7 +12,7 @@ const readFile = (pathFile) => {
   }
   try {
     fs.accessSync(pathFile, fs.constants.R_OK);
-    return parser(format)(fs.readFileSync(pathFile));
+    return parser(format)(fs.readFileSync(pathFile, 'utf8'));
   } catch (err) {
     console.error(`File "${pathFile}" no access!`);
   }
