@@ -48,9 +48,13 @@ test('Wrong paths', () => {
   expect(genDiff(pathAbsent, pathToSecondFile)).toEqual(emptyDiff);
 });
 
-test('YAML files', () => {
-  const pathToFirstFile = '__fixtures__/before.YML';
-  const pathToSecondFile = './__fixtures__/after/after.yml';
+test.each([
+  ['JSON', 'before.json', 'after.json'],
+  ['YAML', 'before.YML', 'after.yml'],
+  ['INI', 'before.ini', 'after.INI'],
+])('%s files', (testName, firstFile, secondFile) => {
+  const pathToFirstFile = path.join('__fixtures__/', firstFile);
+  const pathToSecondFile = path.join('./__fixtures__/after/', secondFile);
 
   expect(genDiff(pathToFirstFile, pathToSecondFile)).toEqual(diff);
 });
