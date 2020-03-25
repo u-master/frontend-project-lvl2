@@ -16,8 +16,8 @@ test('Normal cases', () => {
 
   const diff1 = `{
     host: hexlet.io
-  + timeout: 20
   - timeout: 50
+  + timeout: 20
   - proxy: 123.234.53.22
   - follow: false
   + verbose: true
@@ -39,10 +39,10 @@ test('Normal cases', () => {
   };
 
   const diff2 = `{
-  + name: Ivan
   - name: Ivanov
-  + surname: Petrov
+  + name: Ivan
   - surname: Petr
+  + surname: Petrov
     age: 25
   - pol: male
   + midname: Akakievitch
