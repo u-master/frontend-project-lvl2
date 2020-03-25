@@ -19,5 +19,11 @@ Compares two configuration files and shows a difference.
         -f, --format [type]  output format
         
 ### Visual representation
-
+ - JSON
 [![asciicast](https://asciinema.org/a/311948.svg)](https://asciinema.org/a/311948)
+
+ - YAML
+ [![asciicast](https://asciinema.org/a/312616.svg)](https://asciinema.org/a/312616)
+ 
+ - INI
+ [![asciicast](https://asciinema.org/a/312618.svg)](https://asciinema.org/a/312618)
