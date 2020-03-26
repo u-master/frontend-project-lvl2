@@ -19,11 +19,20 @@ Compares two configuration files and shows a difference.
         -f, --format [type]  output format
         
 ### Visual representation
- - JSON
-[![asciicast](https://asciinema.org/a/311948.svg)](https://asciinema.org/a/311948)
+ - Flat JSON
+ [![asciicast](https://asciinema.org/a/311948.svg)](https://asciinema.org/a/311948)
 
- - YAML
+ - Nested JSON
+ [![asciicast](https://asciinema.org/a/313640.svg)](https://asciinema.org/a/313640)
+
+ - Flat YAML
  [![asciicast](https://asciinema.org/a/312616.svg)](https://asciinema.org/a/312616)
  
- - INI
+ - Nested YAML
+ [![asciicast](https://asciinema.org/a/313616.svg)](https://asciinema.org/a/313616)
+ 
+ - Flat INI
  [![asciicast](https://asciinema.org/a/312618.svg)](https://asciinema.org/a/312618)
+ 
+ - Nested INI
+ [![asciicast](https://asciinema.org/a/313635.svg)](https://asciinema.org/a/313635)
