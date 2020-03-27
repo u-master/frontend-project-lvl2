@@ -1,4 +1,3 @@
-
 import _ from 'lodash';
 
 const addIndent = (depth) => ' '.repeat(4 * depth + 2);
@@ -43,5 +42,6 @@ const render = (difftree) => {
 
   return ['{', ...iterRender(0, difftree), '}'].join('\n');
 };
+
 
 export default render;

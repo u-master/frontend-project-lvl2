@@ -20,10 +20,10 @@ const readFile = (pathFile) => {
 };
 
 
-const genDiffFromFiles = (pathToFile1, pathToFile2) => {
+const genDiffFromFiles = (pathToFile1, pathToFile2, format) => {
   const [obj1, obj2] = [readFile(pathToFile1), readFile(pathToFile2)];
   if (obj1 && obj2) {
-    return genDiff(obj1, obj2);
+    return genDiff(obj1, obj2, format);
   }
   return '{\n}';
 };
