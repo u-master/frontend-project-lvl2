@@ -16,7 +16,7 @@ Compares two configuration files and shows a difference.
         options:
         -V, --version        output the version number
         -h, --help           output usage information
-        -f, --format [type]  output format: nested(default), plain
+        -f, --format [type]  output format: nested(default), plain, json
         
 ### Visual representation
  - Flat JSON
@@ -37,5 +37,5 @@ Compares two configuration files and shows a difference.
  - Nested INI
  [![asciicast](https://asciinema.org/a/313635.svg)](https://asciinema.org/a/313635)
  
- - Nested and plain output formats
- [![asciicast](https://asciinema.org/a/314173.svg)](https://asciinema.org/a/314173)
+ - Different output formats
+ [![asciicast](https://asciinema.org/a/314320.svg)](https://asciinema.org/a/314320)
