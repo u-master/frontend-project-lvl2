@@ -139,3 +139,24 @@ Property 'group3' was added with value [complex value]`;
 
   expect(formatter('plain')(tree)).toEqual(result);
 });
+
+test('JSON output case', () => {
+  const result = ['[{"key":"common","state":"nested","value":',
+    '[{"key":"setting1","state":"unchanged","value":{"before":"Value 1","after":"Value 1"}},',
+    '{"key":"setting2","state":"removed","value":{"before":200}},',
+    '{"key":"setting3","state":"changed","value":{"before":true,"after":{"key":"value"}}},',
+    '{"key":"setting6","state":"nested","value":',
+    '[{"key":"key","state":"unchanged","value":{"before":"value","after":"value"}},',
+    '{"key":"ops","state":"added","value":{"after":"vops"}}]},',
+    '{"key":"follow","state":"added","value":{"after":false}},',
+    '{"key":"setting4","state":"added","value":{"after":"blah blah"}},',
+    '{"key":"setting5","state":"added","value":{"after":{"key5":"value5"}}}]},',
+    '{"key":"group1","state":"nested","value":',
+    '[{"key":"baz","state":"changed","value":{"before":"bas","after":"bars"}},',
+    '{"key":"foo","state":"unchanged","value":{"before":"bar","after":"bar"}},',
+    '{"key":"nest","state":"changed","value":{"before":{"key":"value"},"after":"str"}}]},',
+    '{"key":"group2","state":"removed","value":{"before":{"abc":12345}}},',
+    '{"key":"group3","state":"added","value":{"after":{"fee":100500}}}]'].join('');
+
+  expect(formatter('json')(tree)).toEqual(result);
+});

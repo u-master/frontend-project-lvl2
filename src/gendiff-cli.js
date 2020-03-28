@@ -2,7 +2,7 @@
 import program from 'commander';
 import genDiff from './gendiff-fs.js';
 
-const validFormatOption = ['nested', 'plain'];
+const validFormatOption = ['nested', 'plain', 'json'];
 
 export default () => {
   program.version('1.0.1')
