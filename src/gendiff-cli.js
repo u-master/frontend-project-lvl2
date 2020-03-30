@@ -1,6 +1,6 @@
 
 import program from 'commander';
-import genDiff from './gendiff-fs.js';
+import genDiffFromFiles from './gendiff-fs.js';
 
 const validFormatOption = ['nested', 'plain', 'json'];
 
@@ -16,11 +16,10 @@ export default () => {
         if (!validFormatOption.includes(program.format)) {
           console.log(`Incorrect format option '${program.format}'. Use one of following: ${validFormatOption.join(', ')}.`);
         } else {
-          console.log(genDiff(firstConfig, secondConfig, program.format));
+          console.log(genDiffFromFiles(firstConfig, secondConfig, program.format));
         }
       },
     );
-
 
   program.parse(process.argv);
 };
