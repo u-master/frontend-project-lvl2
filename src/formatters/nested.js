@@ -21,22 +21,13 @@ const buildDiffString = (operation, key, value, depth) => {
 
 const render = (difftree) => {
   const iterRender = (depth, tree) => tree.reduce(
-    (acc, { key, state, value }) => {
-      switch (state) {
-        case 'added':
-          return [...acc, buildDiffString('+', key, value.after, depth)];
-        case 'removed':
-          return [...acc, buildDiffString('-', key, value.before, depth)];
-        case 'nested':
-          return [...acc, buildDiffString(' ', key, '{', depth), ...iterRender(depth + 1, value), buildDiffString(' ', null, '}', depth)];
-        case 'changed':
-          return [...acc, buildDiffString('-', key, value.before, depth), buildDiffString('+', key, value.after, depth)];
-        case 'unchanged':
-          return [...acc, buildDiffString(' ', key, value.before, depth)];
-        default:
-      }
-      return acc;
-    },
+    (acc, { key, state, value }) => ({
+      added: () => [...acc, buildDiffString('+', key, value.after, depth)],
+      removed: () => [...acc, buildDiffString('-', key, value.before, depth)],
+      nested: () => [...acc, buildDiffString(' ', key, '{', depth), ...iterRender(depth + 1, value), buildDiffString(' ', null, '}', depth)],
+      changed: () => [...acc, buildDiffString('-', key, value.before, depth), buildDiffString('+', key, value.after, depth)],
+      unchanged: () => [...acc, buildDiffString(' ', key, value.before, depth)],
+    }[state]()),
     [],
   );
 
