@@ -9,7 +9,7 @@ const getKeyState = (key, before, after) => {
 };
 
 
-const diffTree = (before, after) => _
+const buildDiffTree = (before, after) => _
   .union(Object.keys(before), Object.keys(after))
   .map(
     (key) => {
@@ -18,10 +18,10 @@ const diffTree = (before, after) => _
         key,
         state,
         value: (state === 'nested')
-          ? diffTree(before[key], after[key])
+          ? buildDiffTree(before[key], after[key])
           : { before: before[key], after: after[key] },
       };
     },
   );
 
-export default diffTree;
+export default buildDiffTree;
