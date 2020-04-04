@@ -1,10 +1,12 @@
 import nested from './nested.js';
 import plain from './plain.js';
 
-const formatters = (format) => ({
+const formatters = {
   nested,
   plain,
   json: JSON.stringify,
-}[format]);
+};
 
-export default formatters;
+const format = (outFormat) => formatters[outFormat];
+
+export default format;
