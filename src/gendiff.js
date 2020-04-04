@@ -1,5 +1,8 @@
 
 import buildDiffTree from './difftree.js';
-import formatters from './formatters/index.js';
+import format from './formatters/index.js';
 
-export default (obj1, obj2, format = 'nested') => formatters(format)(buildDiffTree(obj1, obj2));
+export default (obj1, obj2, outFormat) => {
+  const tree = buildDiffTree(obj1, obj2);
+  return format(outFormat)(tree);
+};

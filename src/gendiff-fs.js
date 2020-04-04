@@ -1,7 +1,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import parser from './parsers.js';
+import parse from './parsers.js';
 import genDiff from './gendiff.js';
 
 const readFile = (pathFile) => {
@@ -16,18 +16,11 @@ const readFile = (pathFile) => {
 
 const getFileFormat = (pathFile) => path.extname(pathFile).replace('.', '').toLowerCase();
 
-const parseFile = (pathFile) => {
-  const format = getFileFormat(pathFile);
-  if (!parser(format)) {
-    return null;
-  }
-  const data = readFile(pathFile);
-  return data ? parser(format)(data) : data;
-};
-
 const genDiffFromFiles = (pathToFile1, pathToFile2, outFormat) => {
-  const [obj1, obj2] = [parseFile(pathToFile1), parseFile(pathToFile2)];
-  return (obj1 && obj2) ? genDiff(obj1, obj2, outFormat) : '{\n}';
+  const [parsedFile1, parsedFile2] = [pathToFile1, pathToFile2]
+    .map((file) => ({ format: getFileFormat(file), content: readFile(file) }))
+    .map((data) => (data.content ? parse(data.format)(data.content) : null));
+  return (parsedFile1 && parsedFile2) ? genDiff(parsedFile1, parsedFile2, outFormat) : '{\n}';
 };
 
 export default genDiffFromFiles;
