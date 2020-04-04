@@ -1,84 +1,62 @@
 import path from 'path';
+import fs from 'fs';
 import genDiff from '../src/gendiff-fs.js';
 
-const diffFlat = `{
-    host: hexlet.io
-  - timeout: 50
-  + timeout: 20
-  - proxy: 123.234.53.22
-  - follow: false
-  + verbose: true
-}`;
+const results = {};
 
-const beforeFlatNoDiff = `{
-    host: hexlet.io
-    timeout: 50
-    proxy: 123.234.53.22
-    follow: false
-}`;
+[
+  results.nested,
+  results.nestedNoDiff,
+  results.nestedFromEmpty,
+  results.nestedToEmpty,
+  results.plain,
+  results.json,
+] = [
+  '__fixtures__/nested.result',
+  '__fixtures__/nested-only-before.result',
+  '__fixtures__/nested-from-empty.result',
+  '__fixtures__/nested-to-empty.result',
+  '__fixtures__/plain.result',
+  '__fixtures__/json.result',
+]
+  .map((pathResult) => {
+    try {
+      fs.accessSync(pathResult, fs.constants.R_OK);
+      return fs.readFileSync(pathResult, 'utf8');
+    } catch (err) {
+      console.error(`File "${pathResult}" no access!`);
+    }
+    return '';
+  });
 
-const diffNested = `{
-    common: {
-        setting1: Value 1
-      - setting2: 200
-      - setting3: true
-      + setting3: {
-            key: value
-        }
-        setting6: {
-            key: value
-          + ops: vops
-        }
-      + follow: false
-      + setting4: blah blah
-      + setting5: {
-            key5: value5
-        }
-    }
-    group1: {
-      - baz: bas
-      + baz: bars
-        foo: bar
-      - nest: {
-            key: value
-        }
-      + nest: str
-    }
-  - group2: {
-        abc: 12345
-    }
-  + group3: {
-        fee: 100500
-    }
-}`;
-
-const emptyDiff = `{
+results.nestedEmptyDiff = `{
 }`;
 
 // Different sort of paths testing
 
 test.each([
-  ['Relative', '__fixtures__/flat/before.json', './__fixtures__/flat/after/after.json', diffFlat],
-  ['Absolute', path.join(__dirname, '../__fixtures__/flat/before.json'), path.join(__dirname, '../__fixtures__/flat/after/after.json'), diffFlat],
-  ['Same', '__fixtures__/flat/before.json', '__fixtures__/flat/before.json', beforeFlatNoDiff],
-  ['Wrong (Second)', path.join(__dirname, '../__fixtures__/flat/before.json'), '__fixtures__/wrong/absent.json', emptyDiff],
-  ['Wrong (First)', '__fixtures__/wrong/absent.json', '__fixtures__/flat/after/after.json', emptyDiff],
+  ['Relative', '__fixtures__/before.json', './__fixtures__/after.json', results.nested],
+  ['Absolute', path.join(__dirname, '../__fixtures__/before.json'), path.join(__dirname, '../__fixtures__/after.json'), results.nested],
+  ['Wrong (Second)', path.join(__dirname, '../__fixtures__/before.json'), '__fixtures__/absent.json', results.nestedEmptyDiff],
+  ['Wrong (First)', '__fixtures__/absent.json', '__fixtures__/after.json', results.nestedEmptyDiff],
 ])('%s paths', (testname, firstPath, secondPath, result) => {
-  expect(genDiff(firstPath, secondPath)).toEqual(result);
+  expect(genDiff(firstPath, secondPath, 'nested')).toEqual(result);
 });
 
 // Different file types and structures testing
 
 test.each([
-  ['Flat JSON', 'flat', 'before.json', 'after.json', diffFlat],
-  ['Flat YAML', 'flat', 'before.YML', 'after.yml', diffFlat],
-  ['Flat INI', 'flat', 'before.ini', 'after.INI', diffFlat],
-  ['Nested JSON', 'nested', 'before.json', 'after.json', diffNested],
-  ['Nested YAML', 'nested', 'before.YML', 'after.yml', diffNested],
-  ['Nested INI', 'nested', 'before.ini', 'after.INI', diffNested],
-  ['Unknown files', '.', 'before.txt', 'after.txt', emptyDiff],
-])('%s files', (testName, dir, firstFile, secondFile, result) => {
-  const pathToFirstFile = path.join('__fixtures__', dir, firstFile);
-  const pathToSecondFile = path.join('./__fixtures__/', dir, secondFile);
-  expect(genDiff(pathToFirstFile, pathToSecondFile)).toEqual(result);
+  ['Input: JSON files; output: nested.', 'before.json', 'after.json', 'nested', results.nested],
+  ['Input: YAML files; output: nested.', 'before.yml', 'after.yml', 'nested', results.nested],
+  ['Input: INI files; output: nested.', 'before.ini', 'after.ini', 'nested', results.nested],
+  ['Input: JSON files; output: plain.', 'before.json', 'after.json', 'plain', results.plain],
+  ['Input: JSON files; output: json.', 'before.json', 'after.json', 'json', results.json],
+  ['Input: Empty JSON + Normal JSON; output: nested.', 'empty.json', 'before.json', 'nested', results.nestedFromEmpty],
+  ['Input: Normal JSON + Empty JSON; output: nested.', 'before.json', 'empty.json', 'nested', results.nestedToEmpty],
+  ['Input: Same JSON files; output: nested.', 'before.json', 'before.json', 'nested', results.nestedNoDiff],
+  ['Input: Unknown files', 'before.txt', 'after.txt', 'nested', results.nestedEmptyDiff],
+])('%s files', (testName, firstFile, secondFile, outFormat, result) => {
+  const pathToFirstFile = path.join('__fixtures__', firstFile);
+  const pathToSecondFile = path.join('./__fixtures__/', secondFile);
+  expect(genDiff(pathToFirstFile, pathToSecondFile, outFormat)).toEqual(result);
 });
