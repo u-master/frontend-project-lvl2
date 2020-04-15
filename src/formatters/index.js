@@ -1,5 +1,6 @@
 import nested from './nested.js';
 import plain from './plain.js';
+import error from '../error.js';
 
 const formatters = {
   nested,
@@ -9,9 +10,7 @@ const formatters = {
 
 const format = (outFormat, data) => {
   if (!Object.keys(formatters).includes(outFormat)) {
-    const e = new Error(`Unknown output format '${outFormat}'.`);
-    e.name = 'Gendiff.OutputFormat.Error';
-    throw e;
+    throw error('OutputFormat', `Unknown output format '${outFormat}'.`);
   }
   return formatters[outFormat](data);
 };

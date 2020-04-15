@@ -1,5 +1,6 @@
 import yaml from 'js-yaml';
 import ini from 'ini';
+import error from './error.js';
 
 const parsers = {
   json: JSON.parse,
@@ -10,9 +11,7 @@ const parsers = {
 // If unknown format, then throw an exception
 const parse = (format, data) => {
   if (!Object.keys(parsers).includes(format)) {
-    const e = new Error(`Unknown input format '${format}'.`);
-    e.name = 'Gendiff.InputFormat.Error';
-    throw e;
+    throw error('InputFormat', `Unknown input format '${format}'.`);
   }
   return parsers[format](data);
 };

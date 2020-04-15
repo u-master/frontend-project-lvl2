@@ -16,10 +16,10 @@ program
         console.log(genDiffFromFiles(firstConfig, secondConfig, program.format));
       } catch (e) {
         switch (e.name) {
-          case 'Gendiff.InputFormat.Error':
+          case 'Gendiff.InputFormat':
             console.log(`Error: ${e.message} Use one of following file types: json, yml, ini.`);
             return;
-          case 'Gendiff.OutputFormat.Error':
+          case 'Gendiff.OutputFormat':
             console.log(`Error: ${e.message} Use one of following: ${validFormats.join(', ')}.`);
             return;
           default:
