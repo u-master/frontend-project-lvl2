@@ -44,6 +44,7 @@ test.each([
   ['Input: Normal JSON + Empty JSON; output: nested.', 'before.json', 'empty.json', 'nested', results.nestedToEmpty],
   ['Input: Same JSON files; output: nested.', 'before.json', 'before.json', 'nested', results.nestedNoDiff],
   ['Input: INI+JSON files; output: nested.', 'before.ini', 'after.json', 'nested', results.nested],
+  ['Input: Same INI+JSON files; output: nested.', 'before.ini', 'before.json', 'nested', results.nestedNoDiff],
 ])('%s', (testName, firstFile, secondFile, outFormat, result) => {
   const pathToFirstFile = path.join('__fixtures__', firstFile);
   const pathToSecondFile = path.join('./__fixtures__/', secondFile);
