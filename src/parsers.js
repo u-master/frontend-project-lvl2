@@ -7,9 +7,14 @@ const parsers = {
   ini: ini.parse,
 };
 
-const getNothing = () => (null);
-
-// If unknown format, then parser return just null
-const parse = (format) => (parsers[format] || getNothing);
+// If unknown format, then throw an exception
+const parse = (format, data) => {
+  if (!Object.keys(parsers).includes(format)) {
+    const e = new Error(`Unknown input format '${format}'.`);
+    e.name = 'Gendiff.InputFormat.Error';
+    throw e;
+  }
+  return parsers[format](data);
+};
 
 export default parse;
