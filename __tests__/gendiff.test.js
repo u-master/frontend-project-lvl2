@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import genDiff from '../src/gendiff-fs.js';
+import genDiff from '../src/gendiff.js';
 
 const results = {};
 
@@ -18,16 +18,7 @@ const results = {};
   '__fixtures__/nested-to-empty.result',
   '__fixtures__/plain.result',
   '__fixtures__/json.result',
-]
-  .map((pathResult) => {
-    try {
-      fs.accessSync(pathResult, fs.constants.R_OK);
-      return fs.readFileSync(pathResult, 'utf8');
-    } catch (err) {
-      console.error(`File "${pathResult}" no access!`);
-    }
-    return '';
-  });
+].map((pathResult) => fs.readFileSync(pathResult, 'utf8'));
 
 results.nestedEmptyDiff = `{
 }`;
@@ -37,8 +28,6 @@ results.nestedEmptyDiff = `{
 test.each([
   ['Relative', '__fixtures__/before.json', './__fixtures__/after.json', results.nested],
   ['Absolute', path.join(__dirname, '../__fixtures__/before.json'), path.join(__dirname, '../__fixtures__/after.json'), results.nested],
-  ['Wrong (Second)', path.join(__dirname, '../__fixtures__/before.json'), '__fixtures__/absent.json', results.nestedEmptyDiff],
-  ['Wrong (First)', '__fixtures__/absent.json', '__fixtures__/after.json', results.nestedEmptyDiff],
 ])('%s paths', (testname, firstPath, secondPath, result) => {
   expect(genDiff(firstPath, secondPath, 'nested')).toEqual(result);
 });
@@ -54,9 +43,29 @@ test.each([
   ['Input: Empty JSON + Normal JSON; output: nested.', 'empty.json', 'before.json', 'nested', results.nestedFromEmpty],
   ['Input: Normal JSON + Empty JSON; output: nested.', 'before.json', 'empty.json', 'nested', results.nestedToEmpty],
   ['Input: Same JSON files; output: nested.', 'before.json', 'before.json', 'nested', results.nestedNoDiff],
-  ['Input: Unknown files', 'before.txt', 'after.txt', 'nested', results.nestedEmptyDiff],
-])('%s files', (testName, firstFile, secondFile, outFormat, result) => {
+  ['Input: INI+JSON files; output: nested.', 'before.ini', 'after.json', 'nested', results.nested],
+])('%s', (testName, firstFile, secondFile, outFormat, result) => {
   const pathToFirstFile = path.join('__fixtures__', firstFile);
   const pathToSecondFile = path.join('./__fixtures__/', secondFile);
   expect(genDiff(pathToFirstFile, pathToSecondFile, outFormat)).toEqual(result);
+});
+
+test('Unknown input type.', () => {
+  expect(
+    () => genDiff(
+      path.join('__fixtures__', 'before.txt'),
+      path.join('__fixtures__', 'after.txt'),
+      'nested',
+    ),
+  ).toThrowError('Unknown input format');
+});
+
+test('Unknown output type.', () => {
+  expect(
+    () => genDiff(
+      path.join('__fixtures__', 'before.yml'),
+      path.join('__fixtures__', 'after.yml'),
+      'unknown',
+    ),
+  ).toThrowError('Unknown output format');
 });
