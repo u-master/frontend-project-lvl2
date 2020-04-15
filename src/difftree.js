@@ -4,7 +4,7 @@ const getKeyState = (key, before, after) => {
   if (!_.has(before, key)) return 'added';
   if (!_.has(after, key)) return 'removed';
   if (_.isObject(before[key]) && _.isObject(after[key])) return 'nested';
-  if (before[key] === after[key]) return 'unchanged';
+  if (`${before[key]}` === `${after[key]}`) return 'unchanged';
   return 'changed';
 };
 
@@ -18,8 +18,11 @@ const buildDiffTree = (before, after) => _
         key,
         state,
         value: (state === 'nested')
-          ? buildDiffTree(before[key], after[key])
+          ? null
           : { before: before[key], after: after[key] },
+        children: (state === 'nested')
+          ? buildDiffTree(before[key], after[key])
+          : null,
       };
     },
   );

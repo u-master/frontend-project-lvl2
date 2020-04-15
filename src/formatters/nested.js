@@ -21,10 +21,15 @@ const buildDiffString = (operation, key, value, depth) => {
 
 const render = (difftree) => {
   const iterRender = (depth, tree) => tree.reduce(
-    (acc, { key, state, value }) => ({
+    (acc, {
+      key,
+      state,
+      value,
+      children,
+    }) => ({
       added: () => [...acc, buildDiffString('+', key, value.after, depth)],
       removed: () => [...acc, buildDiffString('-', key, value.before, depth)],
-      nested: () => [...acc, buildDiffString(' ', key, '{', depth), ...iterRender(depth + 1, value), buildDiffString(' ', null, '}', depth)],
+      nested: () => [...acc, buildDiffString(' ', key, '{', depth), ...iterRender(depth + 1, children), buildDiffString(' ', null, '}', depth)],
       changed: () => [...acc, buildDiffString('-', key, value.before, depth), buildDiffString('+', key, value.after, depth)],
       unchanged: () => [...acc, buildDiffString(' ', key, value.before, depth)],
     }[state]()),

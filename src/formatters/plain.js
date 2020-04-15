@@ -13,9 +13,14 @@ const buildDiffString = (state) => ({
 }[state]);
 
 const iterRender = (keyPathAcc, tree) => tree.reduce(
-  (acc, { key, state, value }) => {
+  (acc, {
+    key,
+    state,
+    value,
+    children,
+  }) => {
     const keyPath = [...keyPathAcc, key];
-    if (state === 'nested') return [...acc, ...iterRender(keyPath, value)];
+    if (state === 'nested') return [...acc, ...iterRender(keyPath, children)];
     if (state === 'unchanged') return acc;
     return [...acc, buildDiffString(state)(keyPath.join('.'), value)];
   },
