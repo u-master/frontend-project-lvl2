@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import program from 'commander';
-import genDiffFromFiles from '../src/gendiff.js';
+import genDiffFromFiles from '../src/index.js';
 
 const validFormats = ['nested', 'plain', 'json'];
 
