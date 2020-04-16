@@ -1,4 +1,4 @@
-name: jest
+name: test coverage
 
 on: push
 
@@ -10,9 +10,12 @@ jobs:
       - name: Install npm packages
         run: |
           make install
+      - name: Start inner project linter
+        run: |
+          make lint
       - name: Start test coverage
         uses: paambaati/codeclimate-action@v2.5.2
         env:
-          CC_TEST_REPORTER_ID: 28abab2486d822dd535044da0f2cc85571eabf23189a28ba91dcdd88211fa167
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           coverageCommand: make test-coverage
