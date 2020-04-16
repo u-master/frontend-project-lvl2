@@ -1,10 +1,10 @@
 import yaml from 'js-yaml';
-import ini from 'ini';
+import parseIni from './ini.js';
 
 const parsers = {
   json: JSON.parse,
   yml: yaml.safeLoad,
-  ini: ini.parse,
+  ini: parseIni,
 };
 
 // If unknown format, then throw an exception
