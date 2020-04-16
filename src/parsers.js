@@ -1,6 +1,5 @@
 import yaml from 'js-yaml';
 import ini from 'ini';
-import error from './error.js';
 
 const parsers = {
   json: JSON.parse,
@@ -9,12 +8,12 @@ const parsers = {
 };
 
 // If unknown format, then throw an exception
-const parse = (format, data) => {
-  if (!Object.keys(parsers).includes(format)) {
-    const message = `Unknown input format '${format}'.`;
-    throw error('InputFormat', message);
+const parse = (data, format) => {
+  const parser = parsers[format];
+  if (!parser) {
+    throw new Error(`Unknown input format '${format}'.`);
   }
-  return parsers[format](data);
+  return parser(data);
 };
 
 export default parse;

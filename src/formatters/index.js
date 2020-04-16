@@ -1,6 +1,5 @@
 import nested from './nested.js';
 import plain from './plain.js';
-import error from '../error.js';
 
 const formatters = {
   nested,
@@ -8,11 +7,12 @@ const formatters = {
   json: JSON.stringify,
 };
 
-const format = (outFormat, data) => {
-  if (!Object.keys(formatters).includes(outFormat)) {
-    throw error('OutputFormat', `Unknown output format '${outFormat}'.`);
+const format = (data, outFormat) => {
+  const formatter = formatters[outFormat];
+  if (!formatter) {
+    throw new Error(`Unknown output format '${outFormat}'.`);
   }
-  return formatters[outFormat](data);
+  return formatter(data);
 };
 
 export default format;
