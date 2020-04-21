@@ -8,24 +8,22 @@ const getKeyState = (key, before, after) => {
   return 'changed';
 };
 
-const joinKeys = (firstObj, secondObj) => {
-  const [keysFirst, keysSecond] = [firstObj, secondObj].map((obj) => Object.keys(obj));
-  return [...keysFirst, ...keysSecond.filter((key) => !keysFirst.includes(key))];
-};
-
-const buildDiffTree = (before, after) => joinKeys(before, after)
+const buildDiffTree = (before, after) => _
+  .union(Object.keys(before).sort(), Object.keys(after).sort())
   .map(
     (key) => {
       const state = getKeyState(key, before, after);
+      const value = (state === 'nested')
+        ? null
+        : { before: before[key], after: after[key] };
+      const children = (state === 'nested')
+        ? buildDiffTree(before[key], after[key])
+        : null;
       return {
         key,
         state,
-        value: (state === 'nested')
-          ? null
-          : { before: before[key], after: after[key] },
-        children: (state === 'nested')
-          ? buildDiffTree(before[key], after[key])
-          : null,
+        value,
+        children,
       };
     },
   );
