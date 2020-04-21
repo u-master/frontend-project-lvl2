@@ -28,16 +28,18 @@ test.each([
 // Different file types and structures testing
 
 test.each([
-  ['Input: JSON files; output: nested.', 'before.json', 'after.json', 'nested', 'nested'],
-  ['Input: YAML files; output: nested.', 'before.yml', 'after.yml', 'nested', 'nested'],
-  ['Input: INI files; output: nested.', 'before.ini', 'after.ini', 'nested', 'nested'],
-  ['Input: JSON files; output: plain.', 'before.json', 'after.json', 'plain', 'plain'],
-  ['Input: JSON files; output: json.', 'before.json', 'after.json', 'json', 'json'],
-  ['Input: INI+JSON files; output: nested.', 'before.ini', 'after.json', 'nested', 'nested'],
-])('%s', (testName, firstFile, secondFile, outFormat, resultName) => {
+  ['Input: JSON files', 'before.json', 'after.json'],
+  ['Input: YAML files', 'before.yml', 'after.yml'],
+  ['Input: INI files', 'before.ini', 'after.ini'],
+  ['Input: INI+JSON files', 'before.ini', 'after.json'],
+])('%s', (testName, firstFile, secondFile) => {
   const pathToFirstFile = path.join('__fixtures__', firstFile);
   const pathToSecondFile = path.join('__fixtures__/', secondFile);
-  expect(genDiff(pathToFirstFile, pathToSecondFile, outFormat)).toEqual(results[resultName]);
+  ['nested', 'plain', 'json'].forEach(
+    (outFormat) => expect(
+      genDiff(pathToFirstFile, pathToSecondFile, outFormat),
+    ).toEqual(results[outFormat]),
+  );
 });
 
 test('Unknown input type.', () => {
