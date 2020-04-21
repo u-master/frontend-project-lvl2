@@ -6,27 +6,17 @@ const stringifyValue = (value) => {
   return `${value}`;
 };
 
-const buildDiffString = (state) => ({
-  added: (key, value) => `Property '${key}' was added with value ${stringifyValue(value.after)}`,
-  removed: (key) => `Property '${key}' was deleted`,
-  changed: (key, value) => `Property '${key}' was changed from ${stringifyValue(value.before)} to ${stringifyValue(value.after)}`,
-}[state]);
+const renderers = {
+  added: (keyPath, { value }) => `Property '${keyPath}' was added with value ${stringifyValue(value.after)}`,
+  removed: (keyPath) => `Property '${keyPath}' was deleted`,
+  changed: (keyPath, { value }) => `Property '${keyPath}' was changed from ${stringifyValue(value.before)} to ${stringifyValue(value.after)}`,
+  nested: (keyPath, { children }, render) => render(children, keyPath),
+  unchanged: () => null,
+};
 
-const iterRender = (keyPathAcc, tree) => tree.reduce(
-  (acc, {
-    key,
-    state,
-    value,
-    children,
-  }) => {
-    const keyPath = [...keyPathAcc, key];
-    if (state === 'nested') return [...acc, ...iterRender(keyPath, children)];
-    if (state === 'unchanged') return acc;
-    return [...acc, buildDiffString(state)(keyPath.join('.'), value)];
-  },
-  [],
-);
+const render = (tree, keyPath) => tree
+  .map((node) => renderers[node.state](`${keyPath ? `${keyPath}.` : ''}${node.key}`, node, render))
+  .filter((diff) => diff != null)
+  .join('\n');
 
-const render = (difftree) => iterRender([], difftree).join('\n');
-
-export default render;
+export default (difftree) => render(difftree, null);

@@ -1,43 +1,39 @@
 import _ from 'lodash';
 
-const addIndent = (depth) => ' '.repeat(4 * depth + 2);
+const indent = (depth, shift = 2) => ' '.repeat(4 * depth + shift);
+
+const buildCloseBraces = (depth) => `${indent(depth, 0)}}`;
 
 const buildDiffString = (operation, key, value, depth) => {
-  const renderedValue = (
-    _.isObject(value)
-      ? [
-        '{',
-        ...Object
-          .entries(value)
-          .map(
-            ([k, v]) => buildDiffString(' ', k, v, depth + 1),
-          ),
-        buildDiffString(' ', null, '}', depth),
-      ]
-      : [value]
-  ).join('\n');
-  return `${addIndent(depth)}${operation} ${key ? `${key}: ` : ''}${renderedValue}`;
+  const buildValue = () => {
+    if (!_.isObject(value)) return value;
+    return [
+      '{',
+      ...Object.entries(value)
+        .map(([k, v]) => buildDiffString(' ', k, v, depth + 1)),
+      buildCloseBraces(depth + 1),
+    ].join('\n');
+  };
+
+  return `${indent(depth)}${operation} ${key}: ${buildValue()}`;
 };
 
-const render = (difftree) => {
-  const iterRender = (depth, tree) => tree.reduce(
-    (acc, {
-      key,
-      state,
-      value,
-      children,
-    }) => ({
-      added: () => [...acc, buildDiffString('+', key, value.after, depth)],
-      removed: () => [...acc, buildDiffString('-', key, value.before, depth)],
-      nested: () => [...acc, buildDiffString(' ', key, '{', depth), ...iterRender(depth + 1, children), buildDiffString(' ', null, '}', depth)],
-      changed: () => [...acc, buildDiffString('-', key, value.before, depth), buildDiffString('+', key, value.after, depth)],
-      unchanged: () => [...acc, buildDiffString(' ', key, value.before, depth)],
-    }[state]()),
-    [],
-  );
-
-  return ['{', ...iterRender(0, difftree), '}'].join('\n');
+const renderers = {
+  added: ({ key, value }, depth) => buildDiffString('+', key, value.after, depth),
+  removed: ({ key, value }, depth) => buildDiffString('-', key, value.before, depth),
+  nested: ({ key, children }, depth, render) => buildDiffString(' ', key, render(children, depth + 1), depth),
+  changed: ({ key, value }, depth) => [
+    buildDiffString('-', key, value.before, depth),
+    buildDiffString('+', key, value.after, depth),
+  ].join('\n'),
+  unchanged: ({ key, value }, depth) => buildDiffString(' ', key, value.before, depth),
 };
 
+const render = (difftree, depth) => [
+  '{',
+  ...difftree.map((node) => renderers[node.state](node, depth, render)),
+  buildCloseBraces(depth),
+].join('\n');
 
-export default render;
+
+export default (difftree) => render(difftree, 0);
