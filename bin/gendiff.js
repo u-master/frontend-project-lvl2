@@ -12,20 +12,7 @@ program
   .arguments('<firstConfig> <secondConfig>')
   .action(
     (firstConfig, secondConfig) => {
-      try {
-        console.log(genDiffFromFiles(firstConfig, secondConfig, program.format));
-      } catch (e) {
-        switch (e.name) {
-          case 'Gendiff.InputFormat':
-            console.log(`Error: ${e.message} Use one of following file types: json, yml, ini.`);
-            return;
-          case 'Gendiff.OutputFormat':
-            console.log(`Error: ${e.message} Use one of following: ${validFormats.join(', ')}.`);
-            return;
-          default:
-            console.log(e.toString());
-        }
-      }
+      console.log(genDiffFromFiles(firstConfig, secondConfig, program.format));
     },
   );
 
