@@ -1,22 +1,18 @@
 import _ from 'lodash';
 
-const indent = (depth, shift = 2) => ' '.repeat(4 * depth + shift);
+const indent = (depth) => ' '.repeat(4 * depth);
 
-const buildCloseBraces = (depth) => `${indent(depth, 0)}}`;
-
-const buildDiffString = (operation, key, value, depth) => {
-  const buildValue = () => {
-    if (!_.isObject(value)) return value;
-    return [
-      '{',
-      ...Object.entries(value)
-        .map(([k, v]) => buildDiffString(' ', k, v, depth + 1)),
-      buildCloseBraces(depth + 1),
-    ].join('\n');
-  };
-
-  return `${indent(depth)}${operation} ${key}: ${buildValue()}`;
+const stringifyValue = (value, depth, builder) => {
+  if (!_.isObject(value)) return value;
+  return [
+    '{',
+    ...Object.entries(value)
+      .map(([k, v]) => builder(' ', k, v, depth + 1)),
+    `${indent(depth + 1)}}`,
+  ].join('\n');
 };
+
+const buildDiffString = (operation, key, value, depth) => `${indent(depth)}  ${operation} ${key}: ${stringifyValue(value, depth, buildDiffString)}`;
 
 const renderers = {
   added: ({ key, value }, depth) => buildDiffString('+', key, value.after, depth),
@@ -32,7 +28,7 @@ const renderers = {
 const render = (difftree, depth) => [
   '{',
   ...difftree.map((node) => renderers[node.state](node, depth, render)),
-  buildCloseBraces(depth),
+  `${indent(depth)}}`,
 ].join('\n');
 
 
