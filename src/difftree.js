@@ -9,7 +9,8 @@ const getKeyState = (key, before, after) => {
 };
 
 const buildDiffTree = (before, after) => _
-  .union(Object.keys(before).sort(), Object.keys(after).sort())
+  .union(Object.keys(before), Object.keys(after))
+  .sort()
   .map(
     (key) => {
       const state = getKeyState(key, before, after);
