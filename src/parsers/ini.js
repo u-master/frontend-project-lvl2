@@ -1,16 +1,19 @@
 import ini from 'ini';
 import _ from 'lodash';
 
-const performIntegerValues = (parsed) => Object
+const numberifyValues = (parsed) => Object
   .entries(parsed)
   .reduce(
     (acc, [key, value]) => {
-      acc[key] = _.isObject(value) ? performIntegerValues(value) : _.defaultTo(+`${value}`, value);
-      return acc;
+      if (!_.isObject(value)) {
+        const parsedNum = parseFloat(value);
+        return { ...acc, [key]: _.defaultTo(parsedNum, value) };
+      }
+      return { ...acc, [key]: numberifyValues(value) };
     },
     {},
   );
 
-const parseIni = (iniStr) => performIntegerValues(ini.parse(iniStr));
+const parseIni = (iniStr) => numberifyValues(ini.parse(iniStr));
 
 export default parseIni;
