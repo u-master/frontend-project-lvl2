@@ -4,10 +4,10 @@ const indent = (depth) => ' '.repeat(4 * depth);
 
 const stringifyValue = (value, depth, builder) => {
   if (!_.isObject(value)) return value;
+  const renderedObj = Object.entries(value).map(([k, v]) => builder(' ', k, v, depth + 1));
   return [
     '{',
-    ...Object.entries(value)
-      .map(([k, v]) => builder(' ', k, v, depth + 1)),
+    ...renderedObj,
     `${indent(depth + 1)}}`,
   ].join('\n');
 };
@@ -25,11 +25,14 @@ const renderers = {
   unchanged: ({ key, value }, depth) => buildDiffString(' ', key, value.before, depth),
 };
 
-const render = (difftree, depth) => [
-  '{',
-  ...difftree.map((node) => renderers[node.state](node, depth, render)),
-  `${indent(depth)}}`,
-].join('\n');
+const render = (difftree, depth) => {
+  const renderedTree = difftree.map((node) => renderers[node.state](node, depth, render));
+  return [
+    '{',
+    ...renderedTree,
+    `${indent(depth)}}`,
+  ].join('\n');
+};
 
 
 export default (difftree) => render(difftree, 0);
