@@ -4,49 +4,57 @@ import genDiff from '../src/index.js';
 
 const results = {};
 
+// Resolve path to fixture
+
+const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+
+// First of all, before tests, initialize results object.
+
 beforeAll(() => {
   [
     results.nested,
     results.plain,
     results.json,
   ] = [
-    '__fixtures__/nested.result',
-    '__fixtures__/plain.result',
-    '__fixtures__/json.result',
-  ].map((pathResult) => fs.readFileSync(pathResult, 'utf8'));
+    'nested.result',
+    'plain.result',
+    'json.result',
+  ].map((filename) => fs.readFileSync(getFixturePath(filename), 'utf-8'));
 });
 
-// Different sort of paths testing
+// Different path types testing
 
 test.each([
-  ['Relative', '__fixtures__/before.json', './__fixtures__/after.json', 'nested'],
-  ['Absolute', path.join(__dirname, '../__fixtures__/before.json'), path.join(__dirname, '../__fixtures__/after.json'), 'nested'],
-])('%s paths', (testname, firstPath, secondPath, resultName) => {
-  expect(genDiff(firstPath, secondPath, 'nested')).toEqual(results[resultName]);
+  ['Relative', '__fixtures__/before.json', './__fixtures__/after.json'],
+  ['Absolute', getFixturePath('before.json'), getFixturePath('after.json')],
+])('%s paths', (testname, firstPath, secondPath) => {
+  expect(genDiff(firstPath, secondPath, 'nested')).toEqual(results.nested);
 });
 
 // Different file types and structures testing
 
 test.each([
-  ['Input: JSON files', 'before.json', 'after.json'],
-  ['Input: YAML files', 'before.yml', 'after.yml'],
-  ['Input: INI files', 'before.ini', 'after.ini'],
-  ['Input: INI+JSON files', 'before.ini', 'after.json'],
-])('%s', (testName, firstFile, secondFile) => {
-  const pathToFirstFile = path.join('__fixtures__', firstFile);
-  const pathToSecondFile = path.join('__fixtures__/', secondFile);
-  ['nested', 'plain', 'json'].forEach(
-    (outFormat) => expect(
-      genDiff(pathToFirstFile, pathToSecondFile, outFormat),
-    ).toEqual(results[outFormat]),
-  );
+  ['Input: JSON files. Output: nested format.', 'before.json', 'after.json', 'nested'],
+  ['Input: JSON files. Output: plain format.', 'before.json', 'after.json', 'plain'],
+  ['Input: JSON files. Output: json format.', 'before.json', 'after.json', 'json'],
+  ['Input: YAML files. Output: nested format.', 'before.yml', 'after.yml', 'nested'],
+  ['Input: YAML files. Output: plain format.', 'before.yml', 'after.yml', 'plain'],
+  ['Input: YAML files. Output: json format.', 'before.yml', 'after.yml', 'json'],
+  ['Input: INI files. Output: nested format.', 'before.ini', 'after.ini', 'nested'],
+  ['Input: INI files. Output: plain format.', 'before.ini', 'after.ini', 'plain'],
+  ['Input: INI files. Output: json format.', 'before.ini', 'after.ini', 'json'],
+  ['Input: INI+JSON files', 'before.ini', 'after.json', 'nested'],
+])('%s', (testName, firstFile, secondFile, outFormat) => {
+  expect(
+    genDiff(getFixturePath(firstFile), getFixturePath(secondFile), outFormat),
+  ).toEqual(results[outFormat]);
 });
 
 test('Unknown input type.', () => {
   expect(
     () => genDiff(
-      path.join('__fixtures__', 'before.txt'),
-      path.join('__fixtures__', 'after.txt'),
+      getFixturePath('before.txt'),
+      getFixturePath('after.txt'),
       'nested',
     ),
   ).toThrowError('Unknown input format');
@@ -55,8 +63,8 @@ test('Unknown input type.', () => {
 test('Unknown output type.', () => {
   expect(
     () => genDiff(
-      path.join('__fixtures__', 'before.yml'),
-      path.join('__fixtures__', 'after.yml'),
+      getFixturePath('before.yml'),
+      getFixturePath('after.yml'),
       'unknown',
     ),
   ).toThrowError('Unknown output format');
