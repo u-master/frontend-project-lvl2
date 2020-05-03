@@ -4,17 +4,17 @@ import buildDiffTree from './difftree.js';
 import parse from './parsers/index.js';
 import format from './formatters/index.js';
 
-const getFileFormat = (pathFile) => path.extname(pathFile).slice(1);
+const getFileFormat = (filepath) => path.extname(filepath).slice(1);
 
-const resolvePath = (pathFile) => path.resolve(process.cwd(), pathFile);
+const resolvePath = (filepath) => path.resolve(process.cwd(), filepath);
 
 const genDiff = (pathToFile1, pathToFile2, outFormat = 'nested') => {
-  const [parsedFile1, parsedFile2] = [pathToFile1, pathToFile2]
-    .map((filePath) => {
-      const resolvedPath = resolvePath(filePath);
+  const [before, after] = [pathToFile1, pathToFile2]
+    .map((filepath) => {
+      const resolvedPath = resolvePath(filepath);
       return parse(fs.readFileSync(resolvedPath, 'utf8'), getFileFormat(resolvedPath));
     });
-  const tree = buildDiffTree(parsedFile1, parsedFile2);
+  const tree = buildDiffTree(before, after);
   return format(tree, outFormat);
 };
 
