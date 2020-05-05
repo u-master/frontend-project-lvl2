@@ -1,36 +1,38 @@
 import _ from 'lodash';
 
-const getNode = (key, before, after, treeBuild) => {
+const getNode = (key, before, after, iter) => {
   if (!_.has(before, key)) {
     return {
       key,
       state: 'added',
-      value: { before: null, after: after[key] },
-      children: null,
+      value: { after: after[key] },
     };
   }
   if (!_.has(after, key)) {
     return {
       key,
       state: 'removed',
-      value: { before: before[key], after: null },
-      children: null,
+      value: { before: before[key] },
     };
   }
   if (_.isObject(before[key]) && _.isObject(after[key])) {
     return {
       key,
       state: 'nested',
-      value: null,
-      children: treeBuild(before[key], after[key]),
+      children: iter(before[key], after[key]),
     };
   }
-
+  if (before[key] === after[key]) {
+    return {
+      key,
+      state: 'unchanged',
+      value: { before: before[key], after: after[key] },
+    };
+  }
   return {
     key,
-    state: (before[key] === after[key]) ? 'unchanged' : 'changed',
+    state: 'changed',
     value: { before: before[key], after: after[key] },
-    children: null,
   };
 };
 
