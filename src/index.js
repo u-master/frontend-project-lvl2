@@ -8,12 +8,12 @@ const getFileFormat = (filepath) => path.extname(filepath).slice(1);
 
 const resolvePath = (filepath) => path.resolve(process.cwd(), filepath);
 
-const genDiff = (pathToFile1, pathToFile2, outFormat = 'nested') => {
-  const [before, after] = [pathToFile1, pathToFile2]
-    .map((filepath) => {
-      const resolvedPath = resolvePath(filepath);
-      return parse(fs.readFileSync(resolvedPath, 'utf8'), getFileFormat(resolvedPath));
-    });
+const getParsed = (filepath) => parse(fs.readFileSync(filepath, 'utf8'), getFileFormat(filepath));
+
+const genDiff = (filepath1, filepath2, outFormat = 'nested') => {
+  const [before, after] = [filepath1, filepath2]
+    .map((filepath) => resolvePath(filepath))
+    .map((resolvedPath) => getParsed(resolvedPath));
   const tree = buildDiffTree(before, after);
   return format(tree, outFormat);
 };
