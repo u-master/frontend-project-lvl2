@@ -8,47 +8,46 @@ const results = {};
 
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 
+const readFixture = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
+
 // First of all, before tests, initialize results object.
 
 beforeAll(() => {
-  [
-    results.nested,
-    results.plain,
-    results.json,
-  ] = [
-    'nested.result',
-    'plain.result',
-    'json.result',
-  ].map((filename) => fs.readFileSync(getFixturePath(filename), 'utf-8'));
+  results.nested = readFixture('nested.result');
+  results.plain = readFixture('plain.result');
+  results.json = readFixture('json.result');
 });
 
-// Different path types testing
+// Relative path testing. All other tests used absolute paths.
 
-test.each([
-  ['Relative', '__fixtures__/before.json', './__fixtures__/after.json'],
-  ['Absolute', getFixturePath('before.json'), getFixturePath('after.json')],
-])('%s paths', (testname, firstPath, secondPath) => {
-  expect(genDiff(firstPath, secondPath, 'nested')).toEqual(results.nested);
+test('Relative paths', () => {
+  expect(genDiff('__fixtures__/before.json', './__fixtures__/after.json', 'nested')).toEqual(results.nested);
 });
 
 // Different file types and structures testing
 
 test.each([
-  ['Input: JSON files. Output: nested format.', 'before.json', 'after.json', 'nested'],
-  ['Input: JSON files. Output: plain format.', 'before.json', 'after.json', 'plain'],
-  ['Input: JSON files. Output: json format.', 'before.json', 'after.json', 'json'],
-  ['Input: YAML files. Output: nested format.', 'before.yml', 'after.yml', 'nested'],
-  ['Input: YAML files. Output: plain format.', 'before.yml', 'after.yml', 'plain'],
-  ['Input: YAML files. Output: json format.', 'before.yml', 'after.yml', 'json'],
-  ['Input: INI files. Output: nested format.', 'before.ini', 'after.ini', 'nested'],
-  ['Input: INI files. Output: plain format.', 'before.ini', 'after.ini', 'plain'],
-  ['Input: INI files. Output: json format.', 'before.ini', 'after.ini', 'json'],
-  ['Input: INI+JSON files', 'before.ini', 'after.json', 'nested'],
-])('%s', (testName, firstFile, secondFile, outFormat) => {
-  expect(
-    genDiff(getFixturePath(firstFile), getFixturePath(secondFile), outFormat),
-  ).toEqual(results[outFormat]);
+  ['Input: JSON files.', 'json'],
+  ['Input: YAML files.', 'yml'],
+  ['Input: INI files.', 'ini'],
+])('%s', (testName, inFormat) => {
+  Object.entries(results).forEach(([outFormat, result]) => {
+    const filepath1 = getFixturePath(`before.${inFormat}`);
+    const filepath2 = getFixturePath(`after.${inFormat}`);
+    const diff = genDiff(filepath1, filepath2, outFormat);
+    expect(diff).toEqual(result);
+  });
 });
+
+// Test of mixed input formats
+
+test('Input: INI+JSON files', () => {
+  expect(
+    genDiff(getFixturePath('before.ini'), getFixturePath('after.json'), 'nested'),
+  ).toEqual(results.nested);
+});
+
+// Unknown inputs and outputs.
 
 test('Unknown input type.', () => {
   expect(
