@@ -15,7 +15,7 @@ const nodeStates = [
   },
   {
     check: (key, before, after) => before[key] === after[key],
-    create: (key, before, after) => ({ key, state: 'unchanged', value: { before: before[key], after: after[key] } }),
+    create: (key, before) => ({ key, state: 'unchanged', value: { before: before[key] } }),
   },
   {
     check: (key, before, after) => before[key] !== after[key],
