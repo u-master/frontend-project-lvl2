@@ -11,9 +11,7 @@ const resolvePath = (filepath) => path.resolve(process.cwd(), filepath);
 const getData = (filepath) => parse(fs.readFileSync(filepath, 'utf8'), getFileFormat(filepath));
 
 const genDiff = (filepath1, filepath2, outFormat = 'nested') => {
-  const [before, after] = [filepath1, filepath2]
-    .map((filepath) => resolvePath(filepath))
-    .map((resolvedPath) => getData(resolvedPath));
+  const [before, after] = [filepath1, filepath2].map(resolvePath).map(getData);
   const tree = buildDiffTree(before, after);
   return format(tree, outFormat);
 };
